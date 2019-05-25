@@ -6,32 +6,57 @@
 
         <?php
 
-            /*
-                Run php server via php : `php -S 0.0.0.0:8080` -> écoute sur 127.0.0.1:8080
-            */
-
             require 'vendor/autoload.php';
             use GuzzleHttp\Client;
 
             $client = new Client();
-            //$res = $client->request('GET', 'https://iut-projet-238109.appspot.com/');
-            $res = $client->get('https://iut-projet-238109.appspot.com/');
+            $res = $client->request('GET', 'https://iut-projet-238109.appspot.com/');
+
+            function commande() {
+                global $client;
+
+                $commande = $client->request('GET', 'https://prime-haven-240813.appspot.com/', [
+                    'query' => [
+                        'id' => $_GET['id'],
+                        'number' => '1'
+                    ]
+                ]);
+            }
 
         ?>
     </head>
 
     <body>
-        <?php
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Titre</th>
+                    <th>Auteur</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
 
-            echo '<pre>';
-            //var_dump($res);
-            $body = $res->getBody();
-            $json = json_decode((string) $body);
+            <tbody>
+                <?php
+                
+                    $body = $res->getBody();
+                    $json = json_decode((string) $body);
 
-            var_dump($json);
-            echo '</pre>';
+                    foreach ($json as $value) {
+                        echo "<tr>";
+                        echo "<td>" . $value->title . "</td>";
+                        echo "<td>" . $value->author . "</td>";
+                        echo "<td><a href='/?id=" . $value->id . "'>Commander</a>";
+                        echo "</tr>";
+                    }
 
-        ?>
+                    if(isset($_GET['id'])){
+                        commande();
+                    }
+                ?>
+            </tbody>
+
+        </table>
     </body>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
